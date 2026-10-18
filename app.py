@@ -14,6 +14,7 @@ Optional Bearer token auth for your own deployment.
 import asyncio, json, os, time
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 import httpx
 
 UPSTREAM = os.environ.get("UPSTREAM_URL", "https://sharktide-lightning.hf.space").rstrip("/")
@@ -27,6 +28,15 @@ TOKEN = os.environ.get("PROXY_TOKEN", "")                           # optional; 
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 
 app = FastAPI(title="inferenceport-proxy")
+
+# ADDED CORS MIDDLEWARE SO YOUR LOCAL HTML FILE CAN TALK TO THIS SERVER
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ---------- model cache ----------
 model_cache = {"ts": 0.0, "data": None}
